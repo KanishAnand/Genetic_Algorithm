@@ -101,17 +101,26 @@ def ga():
         probability.append(prob)
 
     print("probability values : " + str(probability))
+    new_population = []
+    i = 0
 
-    # choose two parents according to their probability values
-    ind = np.random.choice(indx, 2, replace=False, p=probability)
-    print("index of parents : " + str(ind))
+    while i < 4:
+        i += 1
+        # choose two parents according to their probability values
+        ind = np.random.choice(indx, 2, replace=False, p=probability)
+        print("index of parents : " + str(ind))
 
-    # crossover of parents to make child
-    children = crossover(ind, population)
-    print("children created from crossover: " + str(children))
+        # crossover of parents to make child
+        children = crossover(ind, population)
+        print("children created from crossover: " + str(children))
 
-    # mutation of children
-    children = mutation(children)
+        # mutation of children
+        children = mutation(children)
+
+        new_population.append(children)
+
+    new_population = np.array(new_population)
+    print(new_population.shape)
 
 
 if __name__ == "__main__":
