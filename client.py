@@ -1,11 +1,13 @@
 import json
 import requests
 import numpy as np
+import sys
 
 ######### DO NOT CHANGE ANYTHING IN THIS FILE ##################
 API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
+POPULATION_SIZE = 4
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 # functions that you can call
 
@@ -54,8 +56,12 @@ def send_request(id, vector, path):
 
 
 def fit(vector):
-    # return validation error or training
-    return np.random.randint(0, 3)
+    # err = get_errors(TEAM_ID, list(vector))
+    # return validation error
+    # print(err)
+    # sys.exit()
+    # return err[1]
+    return np.random.randint(1, 3)
 
 
 def crossover(ind, population):
@@ -71,16 +77,29 @@ def mutation(children):
 
 
 def ga():
-    wghts = [-0.00016927573251173823, 0.0010953590656607808, 0.003731869524518327, 0.08922889556431182, 0.03587507175384199, -
-             0.0015634754169704097, -7.439827367266828e-05, 3.7168210026033343e-06, 1.555252501348866e-08, -2.2215895929103804e-09, 2.306783174308054e-11]
+    wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
+             6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
 
     population = []
     indx = []
 
     # building initial population
-    for i in range(4):
-        population.append(wghts)
+    for i in range(POPULATION_SIZE):
+        population.append(wghts.copy())
         indx.append(i)
+
+    # adding noise to make initial population
+    for i in range(POPULATION_SIZE):
+        # lst = list(np.random.normal(0, 1, 11))
+        for j in range(len(population[i])):
+            population[i][j] = population[i][j] + \
+                np.random.uniform(-1*1e-20, 1*1e-20)
+            population[i][j] = min(10, population[i][j])
+            population[i][j] = max(-10, population[i][j])
+
+    # for val in population:
+    #     print(val)
+    #     print('\n')
 
     population = np.array(population)
 
@@ -95,20 +114,22 @@ def ga():
         for val in population:
             er = fit(val)
             error.append(er)
-            total += np.exp(-er)
+            # total += np.exp(-er)
+            total += 1/er
 
         print("error values : " + str(error))
 
         # convert errors value to probability
         for er in error:
-            prob = np.exp(-er)/total
+            # prob = np.exp(-er)/total
+            prob = 1/(er*total)
             probability.append(prob)
 
         print("probability values : " + str(probability))
         new_population = []
         i = 0
 
-        while i < 4:
+        while i < POPULATION_SIZE:
             i += 1
             # choose two parents according to their probability values
             ind = np.random.choice(indx, 2, replace=False, p=probability)
@@ -124,7 +145,13 @@ def ga():
             new_population.append(children)
 
         new_population = np.array(new_population)
-        population = new_population
+        population = new_population.copy()
+
+    mn = 1e20
+    for val in population:
+        er = fit(val)
+        mn = min(er, mn)
+    print(mn)
 
 
 if __name__ == "__main__":
@@ -132,12 +159,12 @@ if __name__ == "__main__":
     Replace "test" with your secret ID and just run this file 
     to verify that the server is working for your ID.
     """
-    # ga()
+    ga()
 
-    wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
-             6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
-    err = get_errors(TEAM_ID, wghts)
-    print(err)
+    # wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
+    #          6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
+    # err = get_errors(TEAM_ID, wghts)
+    # print(err)
     # assert len(err) == 2
 
     # submit_status = submit(
