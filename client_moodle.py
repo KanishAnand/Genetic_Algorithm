@@ -6,7 +6,7 @@ import numpy as np
 API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
-TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
+
 # functions that you can call
 
 
@@ -84,47 +84,44 @@ def ga():
 
     population = np.array(population)
 
-    no = 0
-    while no < 2:
-        no += 1
-        probability = []
-        error = []
-        total = 0
+    probability = []
+    error = []
+    total = 0
 
-        # calculating fittness values
-        for val in population:
-            er = fit(val)
-            error.append(er)
-            total += np.exp(-er)
+    # calculating fittness values
+    for val in population:
+        er = fit(val)
+        error.append(er)
+        total += np.exp(-er)
 
-        print("error values : " + str(error))
+    print("error values : " + str(error))
 
-        # convert errors value to probability
-        for er in error:
-            prob = np.exp(-er)/total
-            probability.append(prob)
+    # convert errors value to probability
+    for er in error:
+        prob = np.exp(-er)/total
+        probability.append(prob)
 
-        print("probability values : " + str(probability))
-        new_population = []
-        i = 0
+    print("probability values : " + str(probability))
+    new_population = []
+    i = 0
 
-        while i < 4:
-            i += 1
-            # choose two parents according to their probability values
-            ind = np.random.choice(indx, 2, replace=False, p=probability)
-            print("index of parents : " + str(ind))
+    while i < 4:
+        i += 1
+        # choose two parents according to their probability values
+        ind = np.random.choice(indx, 2, replace=False, p=probability)
+        print("index of parents : " + str(ind))
 
-            # crossover of parents to make child
-            children = crossover(ind, population)
-            print("children created from crossover: " + str(children))
+        # crossover of parents to make child
+        children = crossover(ind, population)
+        print("children created from crossover: " + str(children))
 
-            # mutation of children
-            children = mutation(children)
+        # mutation of children
+        children = mutation(children)
 
-            new_population.append(children)
+        new_population.append(children)
 
-        new_population = np.array(new_population)
-        population = new_population
+    new_population = np.array(new_population)
+    print(new_population.shape)
 
 
 if __name__ == "__main__":
@@ -132,14 +129,11 @@ if __name__ == "__main__":
     Replace "test" with your secret ID and just run this file 
     to verify that the server is working for your ID.
     """
-    # ga()
 
-    wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
-             6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
-    err = get_errors(TEAM_ID, wghts)
-    print(err)
+    # err = get_errors(
+    #     "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1", list(-np.arange(0, 1.1, 0.1)))
     # assert len(err) == 2
 
     # submit_status = submit(
-    #     TEAM_ID, list(-np.arange(0, 1.1, 0.1)))
+    #     "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1", list(-np.arange(0, 1.1, 0.1)))
     # assert "submitted" in submit_status
