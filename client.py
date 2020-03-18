@@ -8,14 +8,14 @@ API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
-GENERATIONS = 2
+GENERATIONS = 10
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 # functions that you can call
 
 
 def get_errors(id, vector):
     """
-    returns python array of length 2 
+    returns python array of length 2
     (train error and validation error)
     """
     for i in vector:
@@ -58,16 +58,19 @@ def send_request(id, vector, path):
 
 def fit(vector):
     # return training and validation error
-    # err = get_errors(TEAM_ID, list(vector))
+    if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
+        err = get_errors(TEAM_ID, list(vector))
+        return err
+    else:
+        return [1.44345, np.random.uniform(0, 10.234235)]
+
     # print(err)
     # sys.exit()
-    # return err
-    return [1, 3]
-    # return np.random.randint(1, 3)
+    # return [1, 3]
 
 
 def crossover(ind, population):
-    c = np.random.randint(1, population.shape[1])
+    c = np.random.randint(1, len(population))
     first_part = population[ind[0]][:c]
     second_part = population[ind[1]][c:]
     children = np.concatenate((first_part, second_part))
@@ -78,7 +81,7 @@ def mutation(children):
     # adding some random number to any 4 elements of children
     ind = np.random.choice(children.shape[0], 4, replace=False)
     for i in ind:
-        children[i] += np.random.uniform(-0.02, 0.02)
+        children[i] += np.random.uniform(-5, 5)
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
     return children
@@ -105,28 +108,35 @@ def ga():
             population[i][j] = min(10, population[i][j])
             population[i][j] = max(-10, population[i][j])
 
-    population = np.array(population)
+    store_population = []
 
-    no = 0
-    while no < GENERATIONS:
-        no += 1
+    for i in range(POPULATION_SIZE):
+        er = fit(population[i])
+        store_population.append((er[1], population[i]))
+
+    gen = 0
+    while gen < GENERATIONS:
+        gen += 1
         probability = []
         error = []
         total = 0
 
-        # calculating fittness values
-        st = []
-        mnn = 1e40
-        for val in population:
-            er = fit(val)
-            if er[1] < mnn:
-                mnn = er[1]
-                st = er
-            error.append(er[1])
-            # total += np.exp(-er)
-            total += 1/er[1]
+        population = []
+        sz = 0
+        store_population.sort(key=lambda x: x[0])
+        for pop in store_population:
+            key = pop[0]
+            val = pop[1]
+            # print(key, val)
+            # print('\n')
+            sz += 1
+            population.append(val)
+            error.append(key)
+            total += 1/key
+            if sz == POPULATION_SIZE:
+                break
 
-        print(st)
+        print(store_population[0][0])
         print('\n')
         # print("error values : " + str(error))
 
@@ -137,13 +147,13 @@ def ga():
             probability.append(prob)
 
         # print("probability values : " + str(probability))
-        new_population = []
         i = 0
 
         while i < POPULATION_SIZE:
             i += 1
             # choose two parents according to their probability values
-            ind = np.random.choice(indx, 2, replace=False, p=probability)
+            ind = np.random.choice(
+                POPULATION_SIZE, 2, replace=False, p=probability)
             # print("index of parents : " + str(ind))
 
             # crossover of parents to make child
@@ -153,31 +163,32 @@ def ga():
             # mutation of children
             children = mutation(children)
 
-            new_population.append(children)
+            # store this children
+            er = fit(children)
+            store_population.append((er[1], children))
 
-        new_population = np.array(new_population)
-        population = new_population.copy()
+    if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
+        # saving top 10 fittest members to file
+        store_population.sort(key=lambda x: x[0])
+        sz = 0
+        st = ""
+        for pop in store_population:
+            sz += 1
+            st += str(pop[0]) + " " + str(pop[1])
+            st += '\n'
+            if sz == POPULATION_SIZE:
+                break
 
-    mn = 1e40
-    minpop = []
-    str = []
-    for val in population:
-        er = fit(val)
-        if er[1] < mn:
-            mn = er[1]
-            minpop = val
-            str = er
-
-    print('\n')
-    print(minpop)
-    print(str)
+        with open('population.txt', 'w') as f:
+            f.write(st)
 
 
 if __name__ == "__main__":
     """
-    Replace "test" with your secret ID and just run this file 
+    Replace "test" with your secret ID and just run this file
     to verify that the server is working for your ID.
     """
+
     ga()
 
     # wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
