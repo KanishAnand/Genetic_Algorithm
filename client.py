@@ -7,7 +7,8 @@ import sys
 API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
-POPULATION_SIZE = 4
+POPULATION_SIZE = 10
+GENERATIONS = 2
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 # functions that you can call
 
@@ -56,12 +57,13 @@ def send_request(id, vector, path):
 
 
 def fit(vector):
+    # return training and validation error
     # err = get_errors(TEAM_ID, list(vector))
-    # return validation error
     # print(err)
     # sys.exit()
-    # return err[1]
-    return np.random.randint(1, 3)
+    # return err
+    return [1, 3]
+    # return np.random.randint(1, 3)
 
 
 def crossover(ind, population):
@@ -73,6 +75,12 @@ def crossover(ind, population):
 
 
 def mutation(children):
+    # adding some random number to any 4 elements of children
+    ind = np.random.choice(children.shape[0], 4, replace=False)
+    for i in ind:
+        children[i] += np.random.uniform(-0.02, 0.02)
+        children[i] = min(10, children[i])
+        children[i] = max(-10, children[i])
     return children
 
 
@@ -93,31 +101,34 @@ def ga():
         # lst = list(np.random.normal(0, 1, 11))
         for j in range(len(population[i])):
             population[i][j] = population[i][j] + \
-                np.random.uniform(-1*1e-20, 1*1e-20)
+                np.random.uniform(-1*1e-13, 1*1e-13)
             population[i][j] = min(10, population[i][j])
             population[i][j] = max(-10, population[i][j])
-
-    # for val in population:
-    #     print(val)
-    #     print('\n')
 
     population = np.array(population)
 
     no = 0
-    while no < 2:
+    while no < GENERATIONS:
         no += 1
         probability = []
         error = []
         total = 0
 
         # calculating fittness values
+        st = []
+        mnn = 1e40
         for val in population:
             er = fit(val)
-            error.append(er)
+            if er[1] < mnn:
+                mnn = er[1]
+                st = er
+            error.append(er[1])
             # total += np.exp(-er)
-            total += 1/er
+            total += 1/er[1]
 
-        print("error values : " + str(error))
+        print(st)
+        print('\n')
+        # print("error values : " + str(error))
 
         # convert errors value to probability
         for er in error:
@@ -125,7 +136,7 @@ def ga():
             prob = 1/(er*total)
             probability.append(prob)
 
-        print("probability values : " + str(probability))
+        # print("probability values : " + str(probability))
         new_population = []
         i = 0
 
@@ -133,11 +144,11 @@ def ga():
             i += 1
             # choose two parents according to their probability values
             ind = np.random.choice(indx, 2, replace=False, p=probability)
-            print("index of parents : " + str(ind))
+            # print("index of parents : " + str(ind))
 
             # crossover of parents to make child
             children = crossover(ind, population)
-            print("children created from crossover: " + str(children))
+            # print("children created from crossover: " + str(children))
 
             # mutation of children
             children = mutation(children)
@@ -147,11 +158,19 @@ def ga():
         new_population = np.array(new_population)
         population = new_population.copy()
 
-    mn = 1e20
+    mn = 1e40
+    minpop = []
+    str = []
     for val in population:
         er = fit(val)
-        mn = min(er, mn)
-    print(mn)
+        if er[1] < mn:
+            mn = er[1]
+            minpop = val
+            str = er
+
+    print('\n')
+    print(minpop)
+    print(str)
 
 
 if __name__ == "__main__":
