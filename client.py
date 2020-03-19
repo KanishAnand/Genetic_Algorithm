@@ -10,6 +10,7 @@ MAX_DEG = 11
 POPULATION_SIZE = 10
 GENERATIONS = 10
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
+## TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
 # functions that you can call
 
 
@@ -79,9 +80,9 @@ def crossover(ind, population):
 
 def mutation(children):
     # adding some random number to any 4 elements of children
-    ind = np.random.choice(children.shape[0], 4, replace=False)
+    ind = np.random.choice(children.shape[0], 9, replace=False)
     for i in ind:
-        children[i] += np.random.uniform(-5, 5)
+        children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
     return children
@@ -162,6 +163,7 @@ def ga():
 
             # mutation of children
             children = mutation(children)
+            # print("children created from mutation: " + str(children))
 
             # store this children
             er = fit(children)
@@ -170,6 +172,8 @@ def ga():
     if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
         # saving top 10 fittest members to file
         store_population.sort(key=lambda x: x[0])
+        print(store_population[0][0])
+        print('\n')
         sz = 0
         st = ""
         for pop in store_population:
