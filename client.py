@@ -8,7 +8,7 @@ API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
-GENERATIONS = 10
+GENERATIONS = 30
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 ## TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
 # functions that you can call
@@ -82,7 +82,7 @@ def mutation(children):
     # adding some random number to any 4 elements of children
     ind = np.random.choice(children.shape[0], 9, replace=False)
     for i in ind:
-        children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
+        children[i] = children[i] + np.random.uniform(-1*1e-12, 1*1e-12)
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
     return children
@@ -197,6 +197,9 @@ if __name__ == "__main__":
 
     # wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
     #          6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
+    # wghts = [1.33623375e-13, 1.24031745e-01, - 6.21194106e+00,  4.93390314e-02,
+    #          3.81084816e-02,  8.13236591e-05, - 6.01876919e-05, - 1.25158967e-07,
+    #          3.48412789e-08, 3.97709313e-11, - 6.68652212e-12]
     # err = get_errors(TEAM_ID, wghts)
     # print(err)
     # assert len(err) == 2
