@@ -8,9 +8,11 @@ API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
-GENERATIONS = 30
-TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
-## TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
+GENERATIONS = 5
+TRAIN_RATIO = 0.5
+VAL_RATIO = 0.5
+# TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
+TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
 # functions that you can call
 
 
@@ -60,7 +62,7 @@ def send_request(id, vector, path):
 def fit(vector):
     # return training and validation error
     if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
-        err = get_errors(TEAM_ID, list(vector))
+        err = get_errors(TEAM_ID_D, vector)
         return err
     else:
         return [1.44345, np.random.uniform(0, 10.234235)]
@@ -85,35 +87,41 @@ def mutation(children):
         children[i] = children[i] + np.random.uniform(-1*1e-12, 1*1e-12)
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
-    return children
+    return list(children)
 
 
 def ga():
-    wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
-             6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
+    # # build up initial population
+    # wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
+    #          6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
 
-    population = []
-    indx = []
+    # population = []
+    # indx = []
 
-    # building initial population
-    for i in range(POPULATION_SIZE):
-        population.append(wghts.copy())
-        indx.append(i)
+    # # building initial population
+    # for i in range(POPULATION_SIZE):
+    #     population.append(wghts.copy())
+    #     indx.append(i)
 
-    # adding noise to make initial population
-    for i in range(POPULATION_SIZE):
-        # lst = list(np.random.normal(0, 1, 11))
-        for j in range(len(population[i])):
-            population[i][j] = population[i][j] + \
-                np.random.uniform(-1*1e-13, 1*1e-13)
-            population[i][j] = min(10, population[i][j])
-            population[i][j] = max(-10, population[i][j])
+    # # adding noise to make initial population
+    # for i in range(POPULATION_SIZE):
+    #     # lst = list(np.random.normal(0, 1, 11))
+    #     for j in range(len(population[i])):
+    #         population[i][j] = population[i][j] + \
+    #             np.random.uniform(-1*1e-13, 1*1e-13)
+    #         population[i][j] = min(10, population[i][j])
+    #         population[i][j] = max(-10, population[i][j])
 
-    store_population = []
+    # store_population = []
 
-    for i in range(POPULATION_SIZE):
-        er = fit(population[i])
-        store_population.append((er[1], population[i]))
+    # for i in range(POPULATION_SIZE):
+    #     er = fit(population[i])
+    #     val = TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+    #     store_population.append((val, population[i], er[0], er[1]))
+
+    # use previous best output as initial population
+    with open('population.json') as f:
+        store_population = json.loads(f.read())
 
     gen = 0
     while gen < GENERATIONS:
@@ -137,7 +145,7 @@ def ga():
             if sz == POPULATION_SIZE:
                 break
 
-        print(store_population[0][0])
+        print(store_population[0][2], store_population[0][3])
         print('\n')
         # print("error values : " + str(error))
 
@@ -167,24 +175,28 @@ def ga():
 
             # store this children
             er = fit(children)
-            store_population.append((er[1], children))
+            val = TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+            store_population.append((val, children, er[0], er[1]))
 
     if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
         # saving top 10 fittest members to file
         store_population.sort(key=lambda x: x[0])
-        print(store_population[0][0])
+        print(store_population[0][2], store_population[0][3])
         print('\n')
-        sz = 0
-        st = ""
-        for pop in store_population:
-            sz += 1
-            st += str(pop[0]) + " " + str(pop[1])
-            st += '\n'
-            if sz == POPULATION_SIZE:
-                break
+        # sz = 0
+        # st = ""
+        # for pop in store_population:
+        #     sz += 1
+        #     st += '\"'
+        #     st += str(pop[0]) + " " + str(pop[1]) + " " + \
+        #         str(pop[2]) + " " + str(pop[3])
+        #     st += '\"'
+        #     st += '\n'
+        #     if sz == POPULATION_SIZE:
+        #         break
 
-        with open('population.txt', 'w') as f:
-            f.write(st)
+        with open('population.json', 'w') as f:
+            f.write(json.dumps(store_population[:POPULATION_SIZE], indent=4))
 
 
 if __name__ == "__main__":
@@ -196,11 +208,8 @@ if __name__ == "__main__":
     ga()
 
     # wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
-    #          6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
-    # wghts = [1.33623375e-13, 1.24031745e-01, - 6.21194106e+00,  4.93390314e-02,
-    #          3.81084816e-02,  8.13236591e-05, - 6.01876919e-05, - 1.25158967e-07,
-    #          3.48412789e-08, 3.97709313e-11, - 6.68652212e-12]
-    # err = get_errors(TEAM_ID, wghts)
+    #  6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
+    # err = get_errors(TEAM_ID_D, wghts)
     # print(err)
     # assert len(err) == 2
 
