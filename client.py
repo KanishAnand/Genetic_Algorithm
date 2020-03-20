@@ -8,9 +8,9 @@ API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
-GENERATIONS = 30
-TRAIN_RATIO = 0.6
-VAL_RATIO = 0.4
+GENERATIONS = 20
+TRAIN_RATIO = 0.5
+VAL_RATIO = 0.5
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 ## TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
 # functions that you can call
@@ -62,7 +62,7 @@ def send_request(id, vector, path):
 def fit(vector):
     # return training and validation error
     if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
-        err = get_errors(TEAM_ID_D, vector)
+        err = get_errors(TEAM_ID, vector)
         return err
     else:
         return [1.44345, np.random.uniform(0, 10.234235)]
@@ -84,7 +84,7 @@ def mutation(children):
     # adding some random number to any 4 elements of children
     ind = np.random.choice(children.shape[0], 9, replace=False)
     for i in ind:
-        children[i] = children[i] + np.random.uniform(-1*1e-12, 1*1e-12)
+        children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
     return list(children)
@@ -92,37 +92,37 @@ def mutation(children):
 
 def ga():
     # # build up initial population
-    wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
-             6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
+    # wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
+    #          6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
 
-    population = []
-    indx = []
+    # population = []
+    # indx = []
 
-    # building initial population
-    for i in range(POPULATION_SIZE):
-        population.append(wghts.copy())
-        indx.append(i)
+    # # building initial population
+    # for i in range(POPULATION_SIZE):
+    #     population.append(wghts.copy())
+    #     indx.append(i)
 
-    # adding noise to make initial population
-    for i in range(POPULATION_SIZE):
-        # lst = list(np.random.normal(0, 1, 11))
-        for j in range(len(population[i])):
-            population[i][j] = population[i][j] + \
-                np.random.uniform(-1*1e-13, 1*1e-13)
-            population[i][j] = min(10, population[i][j])
-            population[i][j] = max(-10, population[i][j])
+    # # adding noise to make initial population
+    # for i in range(POPULATION_SIZE):
+    #     # lst = list(np.random.normal(0, 1, 11))
+    #     for j in range(len(population[i])):
+    #         population[i][j] = population[i][j] + \
+    #             np.random.uniform(-1*1e-13, 1*1e-13)
+    #         population[i][j] = min(10, population[i][j])
+    #         population[i][j] = max(-10, population[i][j])
 
-    store_population = []
+    # store_population = []
 
-    for i in range(POPULATION_SIZE):
-        er = fit(population[i])
-        # val = TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
-        val = er[0]*er[1]*er[1]
-        store_population.append((val, population[i], er[0], er[1]))
+    # for i in range(POPULATION_SIZE):
+    #     er = fit(population[i])
+    #     # val = TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+    #     val = er[0]*er[1]*er[1]
+    #     store_population.append((val, population[i], er[0], er[1]))
 
     # use previous best output as initial population
-    # with open('multiply_population.json') as f:
-    #     store_population = json.loads(f.read())
+    with open('population.json') as f:
+        store_population = json.loads(f.read())
 
     gen = 0
     while gen < GENERATIONS:
