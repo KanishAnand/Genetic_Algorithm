@@ -8,11 +8,11 @@ API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
-GENERATIONS = 20
-TRAIN_RATIO = 0.5
-VAL_RATIO = 0.5
+GENERATIONS = 10
+TRAIN_RATIO = 0.4
+VAL_RATIO = 0.6
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
-## TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
+# TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
 # functions that you can call
 
 
@@ -82,9 +82,24 @@ def crossover(ind, population):
 
 def mutation(children):
     # adding some random number to any 4 elements of children
-    ind = np.random.choice(children.shape[0], 9, replace=False)
+    # ind = np.random.choice(children.shape[0], 4, replace=False)
+    # children[9] = children[9] + np.random.uniform(-1*1e-11, 1*1e-11)
+    # if(np.random.randint(-1, 1) > 0):
+    #     children[9] += 1e-12
+    # else:
+    #     children[9] += -1e-12
+    # children[9] = 4.006171586044872e-11
+    # children[9] = min(10, children[9])
+    # children[9] = max(-10, children[9])
+    ind = [9]
     for i in ind:
-        children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
+        # children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-1)
+        val = 0.0001
+        if np.random.randint(-1, 1) == 0:
+            val = -val
+        else:
+            pass
+        children[i] += children[i]*val
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
     return list(children)
@@ -116,13 +131,22 @@ def ga():
 
     # for i in range(POPULATION_SIZE):
     #     er = fit(population[i])
-    #     # val = TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
-    #     val = er[0]*er[1]*er[1]
+    #      val = TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+        # val = er[0]*er[1]*er[1]
     #     store_population.append((val, population[i], er[0], er[1]))
 
     # use previous best output as initial population
     with open('population.json') as f:
         store_population = json.loads(f.read())
+
+    store_population1 = []
+
+    for pop in store_population:
+        er = fit(pop[1])
+        val = TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+        store_population1.append((val, pop[1], er[0], er[1]))
+
+    store_population = store_population1
 
     gen = 0
     while gen < GENERATIONS:
@@ -176,8 +200,8 @@ def ga():
 
             # store this children
             er = fit(children)
-            # val = TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
-            val = er[0]*er[1]*er[1]
+            val = TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+            # val = er[0]*er[1]*er[1]
             store_population.append((val, children, er[0], er[1]))
 
     if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
@@ -197,7 +221,7 @@ def ga():
         #     if sz == POPULATION_SIZE:
         #         break
 
-        with open('multiply_population.json', 'w') as f:
+        with open('population.json', 'w') as f:
             f.write(json.dumps(store_population[:POPULATION_SIZE], indent=4))
 
 
@@ -211,6 +235,34 @@ if __name__ == "__main__":
 
     # wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
     #          6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
+    # wghts1 = [
+    #     -3.2213119791400407e-13,
+    #     0.12403174500837291,
+    #     -6.2119410631458996,
+    #     0.04933903144677353,
+    #     0.03810848157722921,
+    #     8.132366154783281e-5,
+    #     -6.0187691822916674e-5,
+    #     -1.2516173291412288e-7,
+    #     3.484098931034179e-8,
+    #     4.038278175216079e-11,
+    #     -6.6990120153011976e-12
+    # ]
+
+    # wghts = [
+    #     -10.0,
+    #     0.2376134120659597,
+    #     -6.189375944838398,
+    #     0.05308613026201062,
+    #     0.03811229204550535,
+    #     8.165761073704032e-05,
+    #     -6.016362071079147e-05,
+    #     -1.2369153905552713e-07,
+    #     3.483802358746791e-08,
+    #     3.9215234129725944e-11,
+    #     -6.701692022074835e-12
+    # ]
+
     # err = get_errors(TEAM_ID, wghts)
     # print(err)
     # assert len(err) == 2
