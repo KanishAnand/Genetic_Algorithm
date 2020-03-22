@@ -68,7 +68,8 @@ def fit(vector):
 
 
 def get_error(er):
-    return er[0]*er[1]
+    fac = 0.63
+    return er[0]*er[1]*(er[1]**(fac))
 
 
 def crossover(ind, population):
@@ -81,7 +82,10 @@ def crossover(ind, population):
 
 def mutation(children):
     # adding some random number to any 4 elements of children
-    ind = np.random.choice(children.shape[0], 5, replace=False)
+    # ind = np.random.choice(children.shape[0], 9, replace=False)
+
+    ind = [6]
+
     for i in ind:
         val = 1e-4
         if np.random.randint(-1, 1) == 0:
@@ -90,7 +94,7 @@ def mutation(children):
             pass
         children[i] += children[i]*val
 
-        # children[i] = children[i] + np.random.uniform(-1*1e-10, 1*1e-10)
+        # children[i] = children[i] + np.random.uniform(-1*1e-4, 1*1e-4)
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
     return list(children)
