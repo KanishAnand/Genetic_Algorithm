@@ -66,7 +66,8 @@ def fit(vector):
         err = get_errors(TEAM_ID, vector)
         return err
     else:
-        return [1.44345, np.random.uniform(0, 10.234235)]
+        # return [np.random.uniform(0, 1e6), np.random.uniform(0, 1e6)]
+        return [803892.3761349859, 819989.230944475]
 
 
 def get_error(er):
@@ -74,7 +75,7 @@ def get_error(er):
 
 
 def crossover(ind, population):
-    c = np.random.randint(1, len(population))
+    c = np.random.randint(1, len(population)-1)
     first_part = population[ind[0]][:c]
     second_part = population[ind[1]][c:]
     children = np.concatenate((first_part, second_part))
@@ -83,7 +84,7 @@ def crossover(ind, population):
 
 def mutation(children):
     # adding some random number to any 4 elements of children
-    ind = np.random.choice(children.shape[0], 6, replace=False)
+    # ind = np.random.choice(children.shape[0], 6, replace=False)
     # children[9] = children[9] + np.random.uniform(-1*1e-11, 1*1e-11)
     # if(np.random.randint(-1, 1) > 0):
     #     children[9] += 1e-12
@@ -92,11 +93,13 @@ def mutation(children):
     # children[9] = 4.006171586044872e-11
     # children[9] = min(10, children[9])
     # children[9] = max(-10, children[9])
-    # ind = [8]
-    for i in ind:
+
+    for i in range(0, 11):
+        if np.random.uniform(-1, 1) < 0:
+            continue
         # children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
-        # val = 0.000001
-        val = np.random.uniform(0, 1e-5)
+        # val = np.random.uniform(0, 1e-5)
+        val = 1e-5
         if np.random.randint(-1, 1) == 0:
             val = -val
         else:
@@ -166,7 +169,8 @@ def ga():
             sz += 1
             population.append(val)
             error.append(key)
-            total += 1/key
+            # total += 1/key
+            total += np.exp(1/key)
             if sz == POPULATION_SIZE:
                 break
 
@@ -177,7 +181,9 @@ def ga():
         # convert errors value to probability
         for er in error:
             # prob = np.exp(-er)/total
-            prob = 1/(er*total)
+            # prob = 1/(er*total)
+            val = np.exp(1/er)
+            prob = val/total
             probability.append(prob)
 
         # print("probability values : " + str(probability))
@@ -238,33 +244,33 @@ if __name__ == "__main__":
     #     -6.732420176902565e-12
     # ]
 
-    wghts1 = [
-        -9.999909899810897,
-        0.23766554644196472,
-        -6.204567005515383,
-        0.05311540890857698,
-        0.038074594503095686,
-        8.154878290640343e-05,
-        -5.999800198202172e-05,
-        -1.2361282009659648e-07,
-        3.479505647597413e-08,
-        3.910311006326766e-11,
-        -6.712486100849185e-12
-    ]
+    # wghts1 = [
+    #     -9.999846572030108,
+    #     0.23739271118210006,
+    #     -6.204231039406585,
+    #     0.05326121289268733,
+    #     0.03808850560509514,
+    #     8.169140575599425e-05,
+    #     -6.0031607616214635e-05,
+    #     -1.2374957156184454e-07,
+    #     3.479307854046917e-08,
+    #     3.909187274780618e-11,
+    #     -6.7070487854991526e-12
+    # ]
 
-    wghts = [
-        -9.998889911041095,
-        0.2374274060407107,
-        -6.198362438522264,
-        0.0531685243175919,
-        0.03811274532308943,
-        8.163033168963634e-05,
-        -6.005970027490452e-05,
-        -1.2373630918075506e-07,
-        3.4794952091048266e-08,
-        3.9142252315661526e-11,
-        -6.705793732116121e-12
-    ]
+    # wghts = [
+    #     -9.998798557798281,
+    #     0.23741645757571192,
+    #     -6.204231039406585,
+    #     0.05326121289268733,
+    #     0.0380961244490237,
+    #     8.166690323493501e-05,
+    #     -6.0041115738926264e-05,
+    #     -1.2367534779938905e-07,
+    #     3.479307854046917e-08,
+    #     3.909187274780618e-11,
+    #     -6.7070487854991526e-12
+    # ]
 
     # err = get_errors(TEAM_ID, wghts)
     # print(err)

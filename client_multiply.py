@@ -68,7 +68,7 @@ def fit(vector):
 
 
 def get_error(er):
-    fac = 0.63
+    fac = 1
     return er[0]*er[1]*(er[1]**(fac))
 
 
@@ -82,7 +82,7 @@ def crossover(ind, population):
 
 def mutation(children):
     # adding some random number to any 4 elements of children
-    # ind = np.random.choice(children.shape[0], 9, replace=False)
+    ind = np.random.choice(children.shape[0], 2, replace=False)
 
     ind = [6]
 
@@ -161,7 +161,8 @@ def ga():
             sz += 1
             population.append(val)
             error.append(key)
-            total += 1/key
+            # total += 1/key
+            total += np.exp(1/key)
             if sz == POPULATION_SIZE:
                 break
 
@@ -171,7 +172,8 @@ def ga():
 
         # convert errors value to probability
         for er in error:
-            prob = 1/(er*total)
+            val = np.exp(1/er)
+            prob = val/total
             probability.append(prob)
 
         # print("probability values : " + str(probability))
@@ -205,6 +207,9 @@ def ga():
 
         with open('multiply_population.json', 'w') as f:
             f.write(json.dumps(store_population[:POPULATION_SIZE], indent=4))
+
+        submit_status = submit(TEAM_ID, store_population[0][1])
+        assert "submitted" in submit_status
 
 
 if __name__ == "__main__":
