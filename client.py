@@ -9,8 +9,8 @@ PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
 GENERATIONS = 10
-TRAIN_RATIO = 0.3
-VAL_RATIO = 0.7
+TRAIN_RATIO = 0.4
+VAL_RATIO = 0.6
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 # TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
 # TEAM_ID_R = "QQ8vH8Upix6ai9hpg4nPdDnEyvDFSzVXJ87NWHk7gRQjEZnlym"
@@ -83,7 +83,7 @@ def crossover(ind, population):
 
 def mutation(children):
     # adding some random number to any 4 elements of children
-    ind = np.random.choice(children.shape[0], 5, replace=False)
+    ind = np.random.choice(children.shape[0], 6, replace=False)
     # children[9] = children[9] + np.random.uniform(-1*1e-11, 1*1e-11)
     # if(np.random.randint(-1, 1) > 0):
     #     children[9] += 1e-12
@@ -92,10 +92,11 @@ def mutation(children):
     # children[9] = 4.006171586044872e-11
     # children[9] = min(10, children[9])
     # children[9] = max(-10, children[9])
-    # ind = [9, 10]
+    # ind = [8]
     for i in ind:
         # children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
-        val = 0.0001
+        # val = 0.000001
+        val = np.random.uniform(0, 1e-5)
         if np.random.randint(-1, 1) == 0:
             val = -val
         else:
@@ -211,6 +212,9 @@ def ga():
         with open('population.json', 'w') as f:
             f.write(json.dumps(store_population[:POPULATION_SIZE], indent=4))
 
+        submit_status = submit(TEAM_ID, store_population[0][1])
+        assert "submitted" in submit_status
+
 
 if __name__ == "__main__":
     """
@@ -218,7 +222,7 @@ if __name__ == "__main__":
     to verify that the server is working for your ID.
     """
 
-    # ga()
+    ga()
 
     # org_wghts = [
     #     0.0,
@@ -262,8 +266,8 @@ if __name__ == "__main__":
         -6.705793732116121e-12
     ]
 
-    err = get_errors(TEAM_ID, wghts)
-    print(err)
+    # err = get_errors(TEAM_ID, wghts)
+    # print(err)
     # assert len(err) == 2
 
     # submit_status = submit(
