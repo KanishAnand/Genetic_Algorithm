@@ -9,12 +9,9 @@ PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
 GENERATIONS = 10
-TRAIN_RATIO = 0.37
-VAL_RATIO = 0.63
-VAL = 600000
+TRAIN_RATIO = 0.2
+VAL_RATIO = 0.8
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
-TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
-# TEAM_ID_R = "QQ8vH8Upix6ai9hpg4nPdDnEyvDFSzVXJ87NWHk7gRQjEZnlym"
 # functions that you can call
 
 
@@ -72,11 +69,10 @@ def fit(vector):
 
 
 def get_error(er):
-    val = 1
+    # val = 3
     # return er[0]*er[1]*(er[1]**val)
     # return abs(er[0] - er[1])
-    return abs(er[0] - VAL) + (er[1] - VAL)**val
-    # return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+    return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
 
 
 def crossover(ind, population):
@@ -100,29 +96,11 @@ def crossover(ind, population):
 def mutation(children):
     # adding some random number to any 4 elements of children
     ind = np.random.choice(children.shape[0], 4, replace=False)
-    # children[9] = children[9] + np.random.uniform(-1*1e-11, 1*1e-11)
-    # if(np.random.randint(-1, 1) > 0):
-    #     children[9] += 1e-12
-    # else:
-    #     children[9] += -1e-12
-    # children[9] = 4.006171586044872e-11
-    # children[9] = min(10, children[9])
-    # children[9] = max(-10, children[9])
-    # ind = [9, 10]
-    # ind = [3, 4, 6, 8]
     for i in ind:
         # if np.random.uniform(-1, 1) < 0:
         #     continue
 
-        children[i] = children[i] + np.random.uniform(-1*1e-15, 1*1e-15)
-        # children[i] = children[i] + 1e-4
-        # val = np.random.uniform(0, 1e-5)
-        # val = 1e-3
-        # if np.random.randint(-1, 1) == 0:
-        #     val = -val
-        # else:
-        #     pass
-        # children[i] += children[i]*val
+        children[i] = children[i] + np.random.uniform(-1*1e-14, 1*1e-14)
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
 
@@ -180,6 +158,7 @@ def ga():
 
         population = []
         sz = 0
+
         store_population.sort(key=lambda x: x[0])
         for pop in store_population:
             key = pop[0]
@@ -187,52 +166,31 @@ def ga():
             sz += 1
             population.append(val)
             error.append(key)
-            # total += key
-            # total += 1/key
-            # total += np.exp(1/key)
+            total += 1/key
             if sz == POPULATION_SIZE:
                 break
 
         print('\n')
         print(store_population[0][2], store_population[0][3])
         print('\n')
-        # print("error values : " + str(error))
 
         # convert errors value to probability
-        mx = -1
         for er in error:
-            if er > mx:
-                mx = er
-
-        mx += 2
-        for er in error:
-            total += mx - er
-
-        for er in error:
-            # prob = np.exp(-er)/total
-            prob = (mx - er)/total
-            # prob = 1/(er*total)
-            # val = np.exp(1/er)
-            # prob = val/total
+            prob = 1/(er*total)
             probability.append(prob)
 
-        # print("probability values : " + str(probability))
         i = 0
-
         while i < POPULATION_SIZE:
             i += 1
             # choose two parents according to their probability values
             ind = np.random.choice(
                 POPULATION_SIZE, 2, replace=False, p=probability)
-            # print("index of parents : " + str(ind))
 
             # crossover of parents to make child
             children = crossover(ind, population)
-            # print("children created from crossover: " + str(children))
 
             # mutation of children
             children = mutation(children)
-            # print("children created from mutation: " + str(children))
 
             # store this children
             er = fit(children)
@@ -262,10 +220,6 @@ def ga():
         with open('1.json', 'w') as f:
             f.write(json.dumps(store_population[:POPULATION_SIZE], indent=4))
 
-        # for pop in store_population[:POPULATION_SIZE]:
-        #     submit_status = submit(TEAM_ID, pop[1])
-        #     assert "submitted" in submit_status
-
 
 if __name__ == "__main__":
     """
@@ -274,61 +228,3 @@ if __name__ == "__main__":
     """
 
     ga()
-
-    # org_wghts = [
-    #     0.0,
-    #     0.1240317450077846,
-    #     -6.211941063144333,
-    #     0.04933903144709126,
-    #     0.03810848157715883,
-    #     8.132366097133624e-05,
-    #     -6.018769160916912e-05,
-    #     -1.251585565299179e-07,
-    #     3.484096383229681e-08,
-    #     4.1614924993407104e-11,
-    #     -6.732420176902565e-12
-    # ]
-
-    # wghts1 = [
-    #     -9.99919851473988,
-    #     0.23741645755185425,
-    #     -6.2014755148145,
-    #     0.05328563266886073,
-    #     0.03809636252648569,
-    #     8.167016997563472e-05,
-    #     -6.001154765952577e-05,
-    #     -1.2367955814865965e-07,
-    #     3.47924345289215e-08,
-    #     3.9327983505219985e-11,
-    #     -6.723680430590433e-12
-    # ]
-
-    # wghts = [
-    #     -9.99880002000002,
-    #     0.2373357246858279,
-    #     -6.208388799886899,
-    #     0.0532931749300234,
-    #     0.0380877407879637,
-    #     8.170201855514467e-05,
-    #     -5.991762255177789e-05,
-    #     -1.2381269184875577e-07,
-    #     3.474751014356379e-08,
-    #     3.880009147288693e-11,
-    #     - 6.707987332281246e-12
-    # ]
-
-    # submit_wghts = [
-    #     -10.0,
-    #     0.23736897191098186,
-    #     -6.206092494851542,
-    #     0.053266537948645824,
-    #     0.03808850560509514,
-    #     8.169957489656985e-5,
-    #     -6.002560385519697e-5,
-    #     -1.237000791576991e-7,
-    #     3.478959923261512e-8,
-    #     3.9084054764175354e-11,
-    #     -6.7077194903777025e-12
-    # ]
-
-    # assert "submitted" in submit_status
