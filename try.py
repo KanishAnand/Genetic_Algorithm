@@ -9,12 +9,11 @@ PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
 GENERATIONS = 10
-TRAIN_RATIO = 0.37
-VAL_RATIO = 0.63
+TRAIN_RATIO = 0.25
+VAL_RATIO = 0.75
 VAL = 600000
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
-# TEAM_ID_R = "QQ8vH8Upix6ai9hpg4nPdDnEyvDFSzVXJ87NWHk7gRQjEZnlym"
 # functions that you can call
 
 
@@ -72,11 +71,12 @@ def fit(vector):
 
 
 def get_error(er):
-    val = 1
+    # val = 1.5
+    # return (er[0]-er[1])*(er[0]+er[1])
     # return er[0]*er[1]*(er[1]**val)
     # return abs(er[0] - er[1])
-    return abs(er[0] - VAL) + (er[1] - VAL)**val
-    # return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+    # return abs(er[0] - VAL) + (er[1] - VAL)**val
+    return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
 
 
 def crossover(ind, population):
@@ -99,7 +99,7 @@ def crossover(ind, population):
 
 def mutation(children):
     # adding some random number to any 4 elements of children
-    ind = np.random.choice(children.shape[0], 4, replace=False)
+    ind = np.random.choice(children.shape[0], 6, replace=False)
     # children[9] = children[9] + np.random.uniform(-1*1e-11, 1*1e-11)
     # if(np.random.randint(-1, 1) > 0):
     #     children[9] += 1e-12
@@ -114,7 +114,7 @@ def mutation(children):
         # if np.random.uniform(-1, 1) < 0:
         #     continue
 
-        children[i] = children[i] + np.random.uniform(-1*1e-15, 1*1e-15)
+        children[i] = children[i] + np.random.uniform(-1*1e-12, 1*1e-12)/(i+1)
         # children[i] = children[i] + 1e-4
         # val = np.random.uniform(0, 1e-5)
         # val = 1e-3
@@ -147,7 +147,7 @@ def ga():
     #     # lst = list(np.random.normal(0, 1, 11))
     #     for j in range(len(population[i])):
     #         population[i][j] = population[i][j] + \
-    #             np.random.uniform(-1*1e-12, 1*1e-12)
+    #             np.random.uniform(-1*1e-11, 1*1e-11)
     #         population[i][j] = min(10, population[i][j])
     #         population[i][j] = max(-10, population[i][j])
 
@@ -273,7 +273,7 @@ if __name__ == "__main__":
     to verify that the server is working for your ID.
     """
 
-    ga()
+    # ga()
 
     # org_wghts = [
     #     0.0,
@@ -289,46 +289,37 @@ if __name__ == "__main__":
     #     -6.732420176902565e-12
     # ]
 
-    # wghts1 = [
-    #     -9.99919851473988,
-    #     0.23741645755185425,
-    #     -6.2014755148145,
-    #     0.05328563266886073,
-    #     0.03809636252648569,
-    #     8.167016997563472e-05,
-    #     -6.001154765952577e-05,
-    #     -1.2367955814865965e-07,
-    #     3.47924345289215e-08,
-    #     3.9327983505219985e-11,
-    #     -6.723680430590433e-12
-    # ]
+    wghts1 = [
+        1.0479426543297953e-12,
+        0.23741645755198468,
+        -6.20147551481481,
+        0.05318263266875153,
+        0.038095362526550706,
+        8.16701699284859e-5,
+        -6.004154747987943e-5,
+        -1.2367472566650707e-7,
+        3.479248068444771e-8,
+        3.91025564032008e-11,
+        -6.707117744686731e-12
+    ]
 
-    # wghts = [
-    #     -9.99880002000002,
-    #     0.2373357246858279,
-    #     -6.208388799886899,
-    #     0.0532931749300234,
-    #     0.0380877407879637,
-    #     8.170201855514467e-05,
-    #     -5.991762255177789e-05,
-    #     -1.2381269184875577e-07,
-    #     3.474751014356379e-08,
-    #     3.880009147288693e-11,
-    #     - 6.707987332281246e-12
-    # ]
+    wghts = [
+        1.0479426543297953e-12,
+        5.55036184844446773,
+        -6.483398051572465,
+        0.05739717493021394,
+        0.03818898744251867,
+        8.16922209681527e-05,
+        -5.999953140875575e-05,
+        -1.2370064932176484e-07,
+        3.478431760184835e-08,
+        3.876594912388423e-11,
+        -6.707485322273381e-12
+    ]
 
-    # submit_wghts = [
-    #     -10.0,
-    #     0.23736897191098186,
-    #     -6.206092494851542,
-    #     0.053266537948645824,
-    #     0.03808850560509514,
-    #     8.169957489656985e-5,
-    #     -6.002560385519697e-5,
-    #     -1.237000791576991e-7,
-    #     3.478959923261512e-8,
-    #     3.9084054764175354e-11,
-    #     -6.7077194903777025e-12
-    # ]
+    err = get_errors(TEAM_ID, wghts)
+    print(err)
+    assert len(err) == 2
 
-    # assert "submitted" in submit_status
+    submit_status = submit(TEAM_ID, wghts)
+    assert "submitted" in submit_status
