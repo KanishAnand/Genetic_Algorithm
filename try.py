@@ -8,9 +8,9 @@ API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
-GENERATIONS = 10
-TRAIN_RATIO = 0.25
-VAL_RATIO = 0.75
+GENERATIONS = 5
+TRAIN_RATIO = 0.8
+VAL_RATIO = 0.2
 VAL = 600000
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
@@ -71,11 +71,12 @@ def fit(vector):
 
 
 def get_error(er):
-    # val = 1.5
-    # return (er[0]-er[1])*(er[0]+er[1])
+    # val = 0.1
+    # return abs((er[0]-er[1]))*(er[0]+er[1])
     # return er[0]*er[1]*(er[1]**val)
     # return abs(er[0] - er[1])
-    # return abs(er[0] - VAL) + (er[1] - VAL)**val
+    # return abs(er[0] - VAL) + (er[1] - VAL)
+    # return er[0]*er[1]
     return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
 
 
@@ -99,7 +100,7 @@ def crossover(ind, population):
 
 def mutation(children):
     # adding some random number to any 4 elements of children
-    ind = np.random.choice(children.shape[0], 6, replace=False)
+    # ind = np.random.choice(children.shape[0], 6, replace=False)
     # children[9] = children[9] + np.random.uniform(-1*1e-11, 1*1e-11)
     # if(np.random.randint(-1, 1) > 0):
     #     children[9] += 1e-12
@@ -110,19 +111,19 @@ def mutation(children):
     # children[9] = max(-10, children[9])
     # ind = [9, 10]
     # ind = [3, 4, 6, 8]
-    for i in ind:
-        # if np.random.uniform(-1, 1) < 0:
-        #     continue
+    for i in range(0, 11):
+        if np.random.uniform(-1, 1) < 0:
+            continue
 
-        children[i] = children[i] + np.random.uniform(-1*1e-12, 1*1e-12)/(i+1)
+        # children[i] = children[i] + np.random.uniform(-1*1e-14, 1*1e-14)
         # children[i] = children[i] + 1e-4
         # val = np.random.uniform(0, 1e-5)
-        # val = 1e-3
-        # if np.random.randint(-1, 1) == 0:
-        #     val = -val
-        # else:
-        #     pass
-        # children[i] += children[i]*val
+        val = np.random.uniform(0, 1e-3)/(i+1)
+        if np.random.randint(-1, 1) == 0:
+            val = -val
+        else:
+            pass
+        children[i] += children[i]*val
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
 
@@ -241,17 +242,17 @@ def ga():
             print(er[0], er[1])
             store_population.append((val, children, er[0], er[1]))
 
-        store_population.sort(key=lambda x: x[0])
-        submit_status = submit(TEAM_ID, store_population[0][1])
-        assert "submitted" in submit_status
+        # store_population.sort(key=lambda x: x[0])
+        # submit_status = submit(TEAM_ID, store_population[0][1])
+        # assert "submitted" in submit_status
 
-        store_population.sort(key=lambda x: x[2])
-        submit_status = submit(TEAM_ID, store_population[0][1])
-        assert "submitted" in submit_status
+        # store_population.sort(key=lambda x: x[2])
+        # submit_status = submit(TEAM_ID, store_population[0][1])
+        # assert "submitted" in submit_status
 
-        store_population.sort(key=lambda x: x[3])
-        submit_status = submit(TEAM_ID, store_population[0][1])
-        assert "submitted" in submit_status
+        # store_population.sort(key=lambda x: x[3])
+        # submit_status = submit(TEAM_ID, store_population[0][1])
+        # assert "submitted" in submit_status
 
     if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
         # saving top 10 fittest members to file
@@ -273,7 +274,7 @@ if __name__ == "__main__":
     to verify that the server is working for your ID.
     """
 
-    # ga()
+    ga()
 
     # org_wghts = [
     #     0.0,
@@ -289,37 +290,38 @@ if __name__ == "__main__":
     #     -6.732420176902565e-12
     # ]
 
-    wghts1 = [
-        1.0479426543297953e-12,
-        0.23741645755198468,
-        -6.20147551481481,
-        0.05318263266875153,
-        0.038095362526550706,
-        8.16701699284859e-5,
-        -6.004154747987943e-5,
-        -1.2367472566650707e-7,
-        3.479248068444771e-8,
-        3.91025564032008e-11,
-        -6.707117744686731e-12
-    ]
+    # wghts1 = [
 
-    wghts = [
-        1.0479426543297953e-12,
-        5.55036184844446773,
-        -6.483398051572465,
-        0.05739717493021394,
-        0.03818898744251867,
-        8.16922209681527e-05,
-        -5.999953140875575e-05,
-        -1.2370064932176484e-07,
-        3.478431760184835e-08,
-        3.876594912388423e-11,
-        -6.707485322273381e-12
-    ]
+    #     1.0464081285475906e-12,
+    #     5.5503618484444806,
+    #     -6.483398051572718,
+    #     0.057397174930250865,
+    #     0.038188987442654386,
+    #     8.169222101592667e-05,
+    #     -5.9999531481433556e-05,
+    #     -1.2370050153751646e-07,
+    #     3.4784017791618925e-08,
+    #     3.854278686693683e-11,
+    #     -6.713164001194296e-12
+    # ]
 
-    err = get_errors(TEAM_ID, wghts)
-    print(err)
-    assert len(err) == 2
+    # wghts = [
+    #     1.0477465997683253e-12,
+    #     5.578680888894621,
+    #     -6.48200027124412,
+    #     0.057397174930250865,
+    #     0.038188987442654386,
+    #     8.169222101592667e-05,
+    #     -6.001100006511568e-05,
+    #     -1.2370050153751646e-07,
+    #     3.478533887298241e-08,
+    #     3.85427946463428e-11,
+    #     -6.711395101160833e-12
+    # ]
 
-    submit_status = submit(TEAM_ID, wghts)
-    assert "submitted" in submit_status
+    # err = get_errors(TEAM_ID, wghts)
+    # print(err)
+    # assert len(err) == 2
+
+    # submit_status = submit(TEAM_ID, wghts)
+    # assert "submitted" in submit_status
