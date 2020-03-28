@@ -9,8 +9,8 @@ PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
 GENERATIONS = 5
-TRAIN_RATIO = 0.8
-VAL_RATIO = 0.2
+TRAIN_RATIO = 0.5
+VAL_RATIO = 0.5
 VAL = 600000
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
@@ -72,12 +72,12 @@ def fit(vector):
 
 def get_error(er):
     # val = 0.1
-    # return abs((er[0]-er[1]))*(er[0]+er[1])
+    return abs((er[0]-er[1]))*(er[0]+er[1])
     # return er[0]*er[1]*(er[1]**val)
     # return abs(er[0] - er[1])
     # return abs(er[0] - VAL) + (er[1] - VAL)
     # return er[0]*er[1]
-    return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+    # return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
 
 
 def crossover(ind, population):
@@ -118,7 +118,7 @@ def mutation(children):
         # children[i] = children[i] + np.random.uniform(-1*1e-14, 1*1e-14)
         # children[i] = children[i] + 1e-4
         # val = np.random.uniform(0, 1e-5)
-        val = np.random.uniform(0, 1e-3)/(i+1)
+        val = np.random.uniform(0, 1e-6)/(i+1)
         if np.random.randint(-1, 1) == 0:
             val = -val
         else:
