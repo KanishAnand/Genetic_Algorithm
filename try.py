@@ -9,11 +9,11 @@ PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
 GENERATIONS = 5
-TRAIN_RATIO = 0.5
-VAL_RATIO = 0.5
-VAL = 600000
+TRAIN_RATIO = 0.52
+VAL_RATIO = 0.48
+VAL = 400000
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
-TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
+# TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
 # functions that you can call
 
 
@@ -71,13 +71,14 @@ def fit(vector):
 
 
 def get_error(er):
-    # val = 0.1
-    return abs((er[0]-er[1]))*(er[0]+er[1])
+    val = 0
+    # return (er[0] + er[1])/20
+    # return abs((er[0]-er[1]))*(er[0]+er[1])*(er[0]+er[1])
     # return er[0]*er[1]*(er[1]**val)
     # return abs(er[0] - er[1])
     # return abs(er[0] - VAL) + (er[1] - VAL)
     # return er[0]*er[1]
-    # return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+    return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
 
 
 def crossover(ind, population):
@@ -109,23 +110,40 @@ def mutation(children):
     # children[9] = 4.006171586044872e-11
     # children[9] = min(10, children[9])
     # children[9] = max(-10, children[9])
-    # ind = [9, 10]
+    ind = [6, 9, 7]
     # ind = [3, 4, 6, 8]
-    for i in range(0, 11):
+    for i in ind:
         if np.random.uniform(-1, 1) < 0:
             continue
 
-        # children[i] = children[i] + np.random.uniform(-1*1e-14, 1*1e-14)
+        children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
         # children[i] = children[i] + 1e-4
         # val = np.random.uniform(0, 1e-5)
-        val = np.random.uniform(0, 1e-6)/(i+1)
-        if np.random.randint(-1, 1) == 0:
-            val = -val
-        else:
-            pass
-        children[i] += children[i]*val
+        # val = np.random.uniform(0, 1e-2)/(i+1)
+        # if np.random.randint(-1, 1) == 0:
+        #     val = -val
+        # else:
+        #     pass
+        # children[i] += children[i]*val
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
+
+    # ind = [9, 7]
+    # for i in ind:
+    #     if np.random.uniform(-1, 1) < 0:
+    #         continue
+
+    #     children[i] = children[i] + np.random.uniform(-1*1e-3, 1*1e-3)
+    #     # children[i] = children[i] + 1e-4
+    #     # val = np.random.uniform(0, 1e-5)
+    #     # val = np.random.uniform(0, 1e-2)/(i+1)
+    #     # if np.random.randint(-1, 1) == 0:
+    #     #     val = -val
+    #     # else:
+    #     #     pass
+    #     # children[i] += children[i]*val
+    #     children[i] = min(10, children[i])
+    #     children[i] = max(-10, children[i])
 
     return list(children)
 
