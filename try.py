@@ -8,13 +8,37 @@ API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
-GENERATIONS = 5
-TRAIN_RATIO = 0.52
-VAL_RATIO = 0.48
+GENERATIONS = 10
+TRAIN_RATIO = 0.5
+VAL_RATIO = 0.5
 VAL = 400000
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
-# TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
+TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
 # functions that you can call
+
+arr = np.zeros((11, 2))
+arr[0][0] = 1.0495532567575542e-12
+arr[0][1] = 1.0495532567575542e-12
+arr[1][0] = 9.999
+arr[1][1] = 6.676
+arr[2][0] = -6.722
+arr[2][1] = -6.291
+arr[3][0] = 0.06482
+arr[3][1] = 0.05310
+arr[4][0] = 0.037951
+arr[4][1] = 0.038241
+arr[5][0] = 8.857e-05
+arr[5][1] = 8.291e-05
+arr[6][0] = -6.0011e-05
+arr[6][1] = -5.9873e-05
+arr[7][0] = -1.2049e-07
+arr[7][1] = -1.2360e-07
+arr[8][0] = 3.4783e-08
+arr[8][1] = 3.4846e-08
+arr[9][0] = 3.9707e-011
+arr[9][1] = 3.8110e-011
+arr[10][0] = -6.7103e-012
+arr[10][1] = -6.6826e-012
 
 
 def get_errors(id, vector):
@@ -63,7 +87,7 @@ def send_request(id, vector, path):
 def fit(vector):
     # return training and validation error
     if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
-        err = get_errors(TEAM_ID, vector)
+        err = get_errors(TEAM_ID_D, vector)
         return err
     else:
         # return [np.random.uniform(0, 1e6), np.random.uniform(0, 1e6)]
@@ -71,14 +95,14 @@ def fit(vector):
 
 
 def get_error(er):
-    val = 0
-    # return (er[0] + er[1])/20
+    val = 1
+    # return (er[0] + er[1])/5
     # return abs((er[0]-er[1]))*(er[0]+er[1])*(er[0]+er[1])
     # return er[0]*er[1]*(er[1]**val)
     # return abs(er[0] - er[1])
     # return abs(er[0] - VAL) + (er[1] - VAL)
-    # return er[0]*er[1]
-    return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+    return er[0]*(er[1]**val)
+    # return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
 
 
 def crossover(ind, population):
@@ -110,13 +134,18 @@ def mutation(children):
     # children[9] = 4.006171586044872e-11
     # children[9] = min(10, children[9])
     # children[9] = max(-10, children[9])
-    ind = [6, 9, 7]
+    # ind = [6, 9, 7]
     # ind = [3, 4, 6, 8]
-    for i in ind:
-        if np.random.uniform(-1, 1) < 0:
+    for i in range(0, 11):
+        if np.random.uniform(-1, 1) < 0.3:
             continue
 
-        children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
+        oa = arr[i][0] - children[i]
+        ob = arr[i][1] - children[i]
+        a = min(oa, ob)
+        b = max(oa, ob)
+        children[i] = children[i] + np.random.uniform(a, b)/2
+        # children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
         # children[i] = children[i] + 1e-4
         # val = np.random.uniform(0, 1e-5)
         # val = np.random.uniform(0, 1e-2)/(i+1)
