@@ -8,9 +8,9 @@ API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
-GENERATIONS = 10
-TRAIN_RATIO = 0.5
-VAL_RATIO = 0.5
+GENERATIONS = 8
+TRAIN_RATIO = 0.1
+VAL_RATIO = 0.9
 VAL = 400000
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
@@ -101,8 +101,8 @@ def get_error(er):
     # return er[0]*er[1]*(er[1]**val)
     # return abs(er[0] - er[1])
     # return abs(er[0] - VAL) + (er[1] - VAL)
-    return er[0]*(er[1]**val)
-    # return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+    # return er[0]*(er[1]**val)
+    return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
 
 
 def crossover(ind, population):
@@ -137,15 +137,15 @@ def mutation(children):
     # ind = [6, 9, 7]
     # ind = [3, 4, 6, 8]
     for i in range(0, 11):
-        if np.random.uniform(-1, 1) < 0.3:
+        if np.random.uniform(-1, 1) < 0.2:
             continue
 
         oa = arr[i][0] - children[i]
         ob = arr[i][1] - children[i]
         a = min(oa, ob)
         b = max(oa, ob)
-        children[i] = children[i] + np.random.uniform(a, b)/2
-        # children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
+        # children[i] = children[i] + np.random.uniform(a, b)/3
+        children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
         # children[i] = children[i] + 1e-4
         # val = np.random.uniform(0, 1e-5)
         # val = np.random.uniform(0, 1e-2)/(i+1)
@@ -353,22 +353,22 @@ if __name__ == "__main__":
     # ]
 
     # wghts = [
-    #     1.0477465997683253e-12,
-    #     5.578680888894621,
-    #     -6.48200027124412,
-    #     0.057397174930250865,
-    #     0.038188987442654386,
-    #     8.169222101592667e-05,
-    #     -6.001100006511568e-05,
-    #     -1.2370050153751646e-07,
-    #     3.478533887298241e-08,
-    #     3.85427946463428e-11,
-    #     -6.711395101160833e-12
+    #     6.029276656493402e-13,
+    #     9.996846796957787,
+    #     -6.614026114140845,
+    #     0.055171750327307235,
+    #     0.03818087071833189,
+    #     8.189843243917156e-05,
+    #     -5.9985343032536095e-05,
+    #     -1.2341084631883465e-07,
+    #     3.480044359100525e-08,
+    #     3.784579825161244e-11,
+    #     -6.7057877489672886e-12
     # ]
 
-    # err = get_errors(TEAM_ID, wghts)
-    # print(err)
-    # assert len(err) == 2
+    # # err = get_errors(TEAM_ID, wghts)
+    # # print(err)
+    # # assert len(err) == 2
 
-    # submit_status = submit(TEAM_ID, wghts)
+    # submit_status = submit(TEAM_ID_D, wghts)
     # assert "submitted" in submit_status
