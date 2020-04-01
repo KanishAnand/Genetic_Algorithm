@@ -9,11 +9,11 @@ PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
 GENERATIONS = 10
-TRAIN_RATIO = 0.5
-VAL_RATIO = 0.5
+TRAIN_RATIO = 0.3
+VAL_RATIO = 0.7
 VAL = 400000
-# TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
-TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
+TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
+# TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
 # functions that you can call
 
 arr = np.zeros((11, 2))
@@ -87,7 +87,7 @@ def send_request(id, vector, path):
 def fit(vector):
     # return training and validation error
     if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
-        err = get_errors(TEAM_ID_D, vector)
+        err = get_errors(TEAM_ID, vector)
         return err
     else:
         # return [np.random.uniform(0, 1e6), np.random.uniform(0, 1e6)]
@@ -95,14 +95,14 @@ def fit(vector):
 
 
 def get_error(er):
-    val = 0.3
+    val = 1
     # return (er[0] + er[1])/5
     # return abs((er[0]-er[1]))*(er[0]+er[1])*(er[0]+er[1])
-    return er[0]*er[1]*(er[0]**val)
+    # return er[0]*er[1]*(er[0]**val)
     # return abs(er[0] - er[1])
     # return abs(er[0] - VAL) + (er[1] - VAL)
     # return er[0]*(er[1]**val)
-    # return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+    return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
 
 
 def crossover(ind, population):
@@ -145,15 +145,15 @@ def mutation(children):
         a = min(oa, ob)
         b = max(oa, ob)
         # children[i] = children[i] + np.random.uniform(a, b)/(i+1)*8
-        # children[i] = children[i] + np.random.uniform(-1*1e-16, 1*1e-16)
+        children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
         # children[i] = children[i] + 1e-4
         # val = np.random.uniform(0, 1e-3)
         # val = np.random.uniform(0, 1e-2)/(i+1)
-        if np.random.randint(-1, 1) == 0:
-            val = -val
-        else:
-            pass
-        children[i] += children[i]*val
+        # if np.random.randint(-1, 1) == 0:
+        #     val = -val
+        # else:
+        #     pass
+        # children[i] += children[i]*val
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
 
@@ -207,7 +207,7 @@ def ga():
     #     store_population.append((val, population[i], er[0], er[1]))
 
     # use previous best output as initial population
-    with open('1.json') as f:
+    with open('try1.json') as f:
         store_population = json.loads(f.read())
 
     store_population1 = []
@@ -289,17 +289,17 @@ def ga():
             print(er[0], er[1])
             store_population.append((val, children, er[0], er[1]))
 
-        # store_population.sort(key=lambda x: x[0])
-        # submit_status = submit(TEAM_ID, store_population[0][1])
-        # assert "submitted" in submit_status
+        store_population.sort(key=lambda x: x[0])
+        submit_status = submit(TEAM_ID, store_population[0][1])
+        assert "submitted" in submit_status
 
-        # store_population.sort(key=lambda x: x[2])
-        # submit_status = submit(TEAM_ID, store_population[0][1])
-        # assert "submitted" in submit_status
+        store_population.sort(key=lambda x: x[2])
+        submit_status = submit(TEAM_ID, store_population[0][1])
+        assert "submitted" in submit_status
 
-        # store_population.sort(key=lambda x: x[3])
-        # submit_status = submit(TEAM_ID, store_population[0][1])
-        # assert "submitted" in submit_status
+        store_population.sort(key=lambda x: x[3])
+        submit_status = submit(TEAM_ID, store_population[0][1])
+        assert "submitted" in submit_status
 
     if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
         # saving top 10 fittest members to file
@@ -307,7 +307,7 @@ def ga():
         print(store_population[0][2], store_population[0][3])
         print('\n')
 
-        with open('1.json', 'w') as f:
+        with open('try1.json', 'w') as f:
             f.write(json.dumps(store_population[:POPULATION_SIZE], indent=4))
 
         # for pop in store_population[:POPULATION_SIZE]:
@@ -353,20 +353,13 @@ if __name__ == "__main__":
     # ]
 
     # wghts = [
-    #     0.0,
-    #     0.26776653748952367,
-    #     -8.555416422871106,
-    #     0.04306708962374795,
-    #     0.02951404363174599,
-    #     5.5608569240571374e-05,
-    #     -3.160803764936898e-05,
-    #     -5.649560840291235e-08,
-    #     1.3281864566057985e-08,
-    #     1.535813681352174e-11,
-    #     -1.931344761547915e-12
+    #     10, -1.1197791099421281, -7.2498469697987975, 0.09224316633544163, 0.03947418140041894, 6.255722426303591e-05, -
+    #     6.059251534385235e-05, -
+    #     1.2118550355316774e-07, 3.483141219176225e-08, 3.842797153499919e-11, -
+    #     6.703701399924642e-12
     # ]
 
-    # err = get_errors(TEAM_ID, wghts)
+    # err = get_errors(TEAM_ID_D, wghts)
     # print(err)
     # # assert len(err) == 2
 
