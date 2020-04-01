@@ -8,11 +8,11 @@ API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
-GENERATIONS = 8
-TRAIN_RATIO = 0.1
-VAL_RATIO = 0.9
+GENERATIONS = 10
+TRAIN_RATIO = 0.5
+VAL_RATIO = 0.5
 VAL = 400000
-TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
+# TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
 # functions that you can call
 
@@ -95,14 +95,14 @@ def fit(vector):
 
 
 def get_error(er):
-    val = 1
+    val = 0.3
     # return (er[0] + er[1])/5
     # return abs((er[0]-er[1]))*(er[0]+er[1])*(er[0]+er[1])
-    # return er[0]*er[1]*(er[1]**val)
+    return er[0]*er[1]*(er[0]**val)
     # return abs(er[0] - er[1])
     # return abs(er[0] - VAL) + (er[1] - VAL)
     # return er[0]*(er[1]**val)
-    return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
+    # return TRAIN_RATIO*er[0] + VAL_RATIO*er[1]
 
 
 def crossover(ind, population):
@@ -144,16 +144,16 @@ def mutation(children):
         ob = arr[i][1] - children[i]
         a = min(oa, ob)
         b = max(oa, ob)
-        # children[i] = children[i] + np.random.uniform(a, b)/3
-        children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
+        # children[i] = children[i] + np.random.uniform(a, b)/(i+1)*8
+        # children[i] = children[i] + np.random.uniform(-1*1e-16, 1*1e-16)
         # children[i] = children[i] + 1e-4
-        # val = np.random.uniform(0, 1e-5)
+        # val = np.random.uniform(0, 1e-3)
         # val = np.random.uniform(0, 1e-2)/(i+1)
-        # if np.random.randint(-1, 1) == 0:
-        #     val = -val
-        # else:
-        #     pass
-        # children[i] += children[i]*val
+        if np.random.randint(-1, 1) == 0:
+            val = -val
+        else:
+            pass
+        children[i] += children[i]*val
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
 
@@ -353,21 +353,21 @@ if __name__ == "__main__":
     # ]
 
     # wghts = [
-    #     6.029276656493402e-13,
-    #     9.996846796957787,
-    #     -6.614026114140845,
-    #     0.055171750327307235,
-    #     0.03818087071833189,
-    #     8.189843243917156e-05,
-    #     -5.9985343032536095e-05,
-    #     -1.2341084631883465e-07,
-    #     3.480044359100525e-08,
-    #     3.784579825161244e-11,
-    #     -6.7057877489672886e-12
+    #     0.0,
+    #     0.26776653748952367,
+    #     -8.555416422871106,
+    #     0.04306708962374795,
+    #     0.02951404363174599,
+    #     5.5608569240571374e-05,
+    #     -3.160803764936898e-05,
+    #     -5.649560840291235e-08,
+    #     1.3281864566057985e-08,
+    #     1.535813681352174e-11,
+    #     -1.931344761547915e-12
     # ]
 
-    # # err = get_errors(TEAM_ID, wghts)
-    # # print(err)
+    # err = get_errors(TEAM_ID, wghts)
+    # print(err)
     # # assert len(err) == 2
 
     # submit_status = submit(TEAM_ID_D, wghts)
