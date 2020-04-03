@@ -8,12 +8,13 @@ API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
-GENERATIONS = 10
-TRAIN_RATIO = 0.3
-VAL_RATIO = 0.7
+GENERATIONS = 1
+TRAIN_RATIO = 0
+VAL_RATIO = 1
 VAL = 400000
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 # TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
+
 # functions that you can call
 
 arr = np.zeros((11, 2))
@@ -144,8 +145,8 @@ def mutation(children):
         ob = arr[i][1] - children[i]
         a = min(oa, ob)
         b = max(oa, ob)
-        # children[i] = children[i] + np.random.uniform(a, b)/(i+1)*8
-        children[i] = children[i] + np.random.uniform(-1*1e-13, 1*1e-13)
+        # children[i] = children[i] + np.random.uniform(a, b)/(i+1)*3
+        children[i] = children[i] + np.random.uniform(-1e-14, 1e-14)
         # children[i] = children[i] + 1e-4
         # val = np.random.uniform(0, 1e-3)
         # val = np.random.uniform(0, 1e-2)/(i+1)
@@ -207,7 +208,7 @@ def ga():
     #     store_population.append((val, population[i], er[0], er[1]))
 
     # use previous best output as initial population
-    with open('try1.json') as f:
+    with open('new.json') as f:
         store_population = json.loads(f.read())
 
     store_population1 = []
@@ -307,7 +308,7 @@ def ga():
         print(store_population[0][2], store_population[0][3])
         print('\n')
 
-        with open('try1.json', 'w') as f:
+        with open('new.json', 'w') as f:
             f.write(json.dumps(store_population[:POPULATION_SIZE], indent=4))
 
         # for pop in store_population[:POPULATION_SIZE]:
@@ -353,15 +354,22 @@ if __name__ == "__main__":
     # ]
 
     # wghts = [
-    #     10, -1.1197791099421281, -7.2498469697987975, 0.09224316633544163, 0.03947418140041894, 6.255722426303591e-05, -
-    #     6.059251534385235e-05, -
-    #     1.2118550355316774e-07, 3.483141219176225e-08, 3.842797153499919e-11, -
-    #     6.703701399924642e-12
+    #     1.1301712071133253e-13,
+    #     3.76928590744704,
+    #     -8.55079559483845,
+    #     0.04307935587111124,
+    #     0.02953124122066496,
+    #     5.560823224926054e-05,
+    #     -3.159177175538415e-05,
+    #     -5.649194016115993e-08,
+    #     1.3282222038462544e-08,
+    #     1.5375292282654468e-11,
+    #     -1.9199130436732535e-12
     # ]
 
-    # err = get_errors(TEAM_ID_D, wghts)
+    # err = get_errors(TEAM_ID, wghts)
     # print(err)
-    # # assert len(err) == 2
+    # assert len(err) == 2
 
     # submit_status = submit(TEAM_ID_D, wghts)
     # assert "submitted" in submit_status

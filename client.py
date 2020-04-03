@@ -9,12 +9,13 @@ PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
 GENERATIONS = 10
-TRAIN_RATIO = 0.15
+TRAIN_RATIO = 0.25
 VAL_RATIO = 0.75
 TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
 # TEAM_ID_R = "QQ8vH8Upix6ai9hpg4nPdDnEyvDFSzVXJ87NWHk7gRQjEZnlym"
 # functions that you can call
+f = open('trace.json', 'a')
 
 
 def get_errors(id, vector):
@@ -63,7 +64,7 @@ def send_request(id, vector, path):
 def fit(vector):
     # return training and validation error
     if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
-        err = get_errors(TEAM_ID_D, vector)
+        err = get_errors(TEAM_ID, vector)
         return err
     else:
         # return [np.random.uniform(0, 1e6), np.random.uniform(0, 1e6)]
@@ -79,34 +80,18 @@ def crossover(ind, population):
     first_part = population[ind[0]][:c]
     second_part = population[ind[1]][c:]
     children = np.concatenate((first_part, second_part))
+    f.write("CROSSPOINT INDEX : " + str(c) + '\n\n')
     return children
 
 
 def mutation(children):
     # adding some random number to any 4 elements of children
-    ind = np.random.choice(children.shape[0], 9, replace=False)
-    # children[9] = children[9] + np.random.uniform(-1*1e-11, 1*1e-11)
-    # if(np.random.randint(-1, 1) > 0):
-    #     children[9] += 1e-12
-    # else:
-    #     children[9] += -1e-12
-    # children[9] = 4.006171586044872e-11
-    # children[9] = min(10, children[9])
-    # children[9] = max(-10, children[9])
-    # ind = [8]
 
-    for i in ind:
-        # if np.random.uniform(-1, 1) < 0:
-        #     continue
-        # children[i] = children[i] + np.random.uniform(-1*1e-5, 1*1e-5
-        children[i] = children[i] + 1e-4
-        # val = np.random.uniform(0, 1e-5)
-        # val = 1e-4
-        # if np.random.randint(-1, 1) == 0:
-        #     val = -val
-        # else:
-        #     pass
-        # children[i] += children[i]*val
+    for i in range(0, 11):
+        if np.random.uniform(-1, 1) < 0.3:
+            continue
+
+        children[i] = children[i] + np.random.uniform(-1e-12, 1e-12)
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
 
@@ -114,50 +99,52 @@ def mutation(children):
 
 
 def ga():
-    # # build up initial population
-    # wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
-    #          6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
+    # build up initial population
+    wghts = [0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
+             6.018769160916912e-05, -1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -6.732420176902565e-12]
 
-    # population = []
-    # indx = []
+    population = []
+    indx = []
 
-    # # building initial population
-    # for i in range(POPULATION_SIZE):
-    #     population.append(wghts.copy())
-    #     indx.append(i)
+    # building initial population
+    for i in range(POPULATION_SIZE):
+        population.append(wghts.copy())
+        indx.append(i)
 
-    # # adding noise to make initial population
-    # for i in range(POPULATION_SIZE):
-    #     # lst = list(np.random.normal(0, 1, 11))
-    #     for j in range(len(population[i])):
-    #         population[i][j] = population[i][j] + \
-    #             np.random.uniform(-1*1e-13, 1*1e-13)
-    #         population[i][j] = min(10, population[i][j])
-    #         population[i][j] = max(-10, population[i][j])
+    # adding noise to make initial population
+    for i in range(POPULATION_SIZE):
+        # lst = list(np.random.normal(0, 1, 11))
+        for j in range(len(population[i])):
+            population[i][j] = population[i][j] + \
+                np.random.uniform(-1*1e-13, 1*1e-13)
+            population[i][j] = min(10, population[i][j])
+            population[i][j] = max(-10, population[i][j])
 
-    # store_population = []
+    store_population = []
 
-    # for i in range(POPULATION_SIZE):
-    #     er = fit(population[i])
-    #   val = get_error(er)
-    #     store_population.append((val, population[i], er[0], er[1]))
+    for i in range(POPULATION_SIZE):
+        er = fit(population[i])
+        val = get_error(er)
+        store_population.append((val, population[i], er[0], er[1]))
 
     # use previous best output as initial population
-    with open('population.json') as f:
-        store_population = json.loads(f.read())
+    # with open('population.json') as f:
+    #     store_population = json.loads(f.read())
 
-    store_population1 = []
+    # store_population1 = []
 
-    for pop in store_population:
-        er = fit(pop[1])
-        val = get_error(er)
-        store_population1.append((val, pop[1], er[0], er[1]))
+    # for pop in store_population:
+    #     er = fit(pop[1])
+    #     val = get_error(er)
+    #     store_population1.append((val, pop[1], er[0], er[1]))
 
-    store_population = store_population1
+    # store_population = store_population1
 
     gen = 0
+
     while gen < GENERATIONS:
         gen += 1
+
         probability = []
         error = []
         total = 0
@@ -171,66 +158,99 @@ def ga():
             sz += 1
             population.append(val)
             error.append(key)
-            # total += 1/key
-            total += np.exp(1/key)
+            total += 1/key
+            # total += np.exp(1/key)
             if sz == POPULATION_SIZE:
                 break
 
         print(store_population[0][2], store_population[0][3])
         print('\n')
+
+        f.write("ITERATION NO : " + str(gen) + '\n\n')
+        f.write("INITIAL POPULATION" + '\n\n')
+
+        for pp in range(POPULATION_SIZE):
+            f.write("INDEX : " + str(pp) + '\n\n')
+            f.write(json.dumps(store_population[pp], indent=4))
+            f.write('\n\n')
+
         # print("error values : " + str(error))
 
         # convert errors value to probability
         for er in error:
             # prob = np.exp(-er)/total
-            # prob = 1/(er*total)
-            val = np.exp(1/er)
-            prob = val/total
+            prob = 1/(er*total)
+            # val = np.exp(1/er)
+            # prob = val/total
             probability.append(prob)
 
+        f.write("PROBABILITY VALUES: " + '\n\n')
+        f.write(json.dumps(probability, indent=4))
+        f.write('\n\n')
         # print("probability values : " + str(probability))
         i = 0
 
         while i < POPULATION_SIZE:
             i += 1
             # choose two parents according to their probability values
+            f.write("CHILDREN NO : " + str(i) + '\n\n')
             ind = np.random.choice(
                 POPULATION_SIZE, 2, replace=False, p=probability)
             # print("index of parents : " + str(ind))
+            f.write("CROSSOVER OF PARENTS WITH INDEX NO : " +
+                    str(ind[0]) + " AND " + str(ind[1]) + '\n\n')
+
+            f.write("FIRST PARENT : INDEX " + str(ind[0]) + '\n\n')
+            f.write(json.dumps(store_population[ind[0]], indent=4))
+            f.write('\n\n')
+            f.write("SECOND PARENT : INDEX " + str(ind[1]) + '\n\n')
+            f.write(json.dumps(store_population[ind[1]], indent=4))
+            f.write('\n\n')
 
             # crossover of parents to make child
+            f.write("CHILDREN : " + '\n\n')
             children = crossover(ind, population)
             # print("children created from crossover: " + str(children))
-
+            er = fit(list(children))
+            val = get_error(er)
+            f.write(json.dumps((val, list(children), er[0], er[1]), indent=4))
             # mutation of children
+            f.write('\n\n')
             children = mutation(children)
+            f.write("APPLYING MUTATION : " + '\n\n')
             # print("children created from mutation: " + str(children))
 
             # store this children
             er = fit(children)
             val = get_error(er)
+            f.write(json.dumps((val, list(children), er[0], er[1]), indent=4))
+            f.write('\n\n')
             store_population.append((val, children, er[0], er[1]))
+            print("Children  ", end="")
+            print(er[0], er[1])
 
-        store_population.sort(key=lambda x: x[0])
-        submit_status = submit(TEAM_ID, store_population[0][1])
-        assert "submitted" in submit_status
+        f.write('\n')
+        f.write("---------------------------------------------------------------------------------------------------------------------------------------" + '\n\n\n')
+        # store_population.sort(key=lambda x: x[0])
+        # submit_status = submit(TEAM_ID, store_population[0][1])
+        # assert "submitted" in submit_status
 
-        store_population.sort(key=lambda x: x[2])
-        submit_status = submit(TEAM_ID, store_population[0][1])
-        assert "submitted" in submit_status
+        # store_population.sort(key=lambda x: x[2])
+        # submit_status = submit(TEAM_ID, store_population[0][1])
+        # assert "submitted" in submit_status
 
-        store_population.sort(key=lambda x: x[3])
-        submit_status = submit(TEAM_ID, store_population[0][1])
-        assert "submitted" in submit_status
+        # store_population.sort(key=lambda x: x[3])
+        # submit_status = submit(TEAM_ID, store_population[0][1])
+        # assert "submitted" in submit_status
 
-    if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
-        # saving top 10 fittest members to file
-        store_population.sort(key=lambda x: x[0])
-        print(store_population[0][2], store_population[0][3])
-        print('\n')
+    # if len(sys.argv) == 2 and sys.argv[1] == "SERVER":
+    #     # saving top 10 fittest members to file
+    #     store_population.sort(key=lambda x: x[0])
+    #     print(store_population[0][2], store_population[0][3])
+    #     print('\n')
 
-        with open('population.json', 'w') as f:
-            f.write(json.dumps(store_population[:POPULATION_SIZE], indent=4))
+        # with open('population.json', 'w') as f:
+        #     f.write(json.dumps(store_population[:POPULATION_SIZE], indent=4))
 
         # for pop in store_population[:POPULATION_SIZE]:
         #     submit_status = submit(TEAM_ID, pop[1])
@@ -243,7 +263,7 @@ if __name__ == "__main__":
     to verify that the server is working for your ID.
     """
 
-    # ga()
+    ga()
 
     # org_wghts = [
     #     0.0,
@@ -273,25 +293,17 @@ if __name__ == "__main__":
     #     0
     # ]
 
-#     wghts = [
-#         0.0,
-#    2.6040317450077846,
-#    -6.111941063144333,
-#    0.04903903144709126,
-#    0.03810948157715883,
-#    7.602366097133624e-05, #big changes in validation
-#    -6.000009160916912e-05,#same
-#    -1.252585565299179e-07,
-#    3.487606383229681e-08,
-#    4.1614524993407104e-11,
-#    -6.760420176902565e-12
+    # wghts = [
+    #     0.0, 0.1240317450077846, -6.211941063144333, 0.04933903144709126, 0.03810848157715883, 8.132366097133624e-05, -
+    #     6.018769160916912e-05, -
+    #     1.251585565299179e-07, 3.484096383229681e-08, 4.1614924993407104e-11, -
+    #     6.732420176902565e-12
 
+    # ]
 
-#     ]
-
-#     # err = get_errors(TEAM_ID_D, wghts)
-#     # print(err)
-#     # assert len(err) == 2
+    # err = get_errors(TEAM_ID_D, wghts)
+    # print(err)
+    # assert len(err) == 2
 
 #     submit_status = submit(
 #         TEAM_ID, wghts)
