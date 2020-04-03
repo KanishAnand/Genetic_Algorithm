@@ -8,7 +8,7 @@ API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
 POPULATION_SIZE = 10
-GENERATIONS = 1
+GENERATIONS = 50
 TRAIN_RATIO = 0
 VAL_RATIO = 1
 VAL = 400000
@@ -146,15 +146,15 @@ def mutation(children):
         a = min(oa, ob)
         b = max(oa, ob)
         # children[i] = children[i] + np.random.uniform(a, b)/(i+1)*3
-        children[i] = children[i] + np.random.uniform(-1e-14, 1e-14)
+        # children[i] = children[i] + np.random.uniform(-1e-13, 1e-13)
         # children[i] = children[i] + 1e-4
-        # val = np.random.uniform(0, 1e-3)
+        val = np.random.uniform(0, 1e-3)
         # val = np.random.uniform(0, 1e-2)/(i+1)
-        # if np.random.randint(-1, 1) == 0:
-        #     val = -val
-        # else:
-        #     pass
-        # children[i] += children[i]*val
+        if np.random.randint(-1, 1) == 0:
+            val = -val
+        else:
+            pass
+        children[i] += children[i]*val
         children[i] = min(10, children[i])
         children[i] = max(-10, children[i])
 

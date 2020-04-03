@@ -7,7 +7,7 @@ import sys
 API_ENDPOINT = 'http://10.4.21.147'
 PORT = 3000
 MAX_DEG = 11
-POPULATION_SIZE = 10
+POPULATION_SIZE = 7
 GENERATIONS = 10
 TRAIN_RATIO = 0.25
 VAL_RATIO = 0.75
@@ -15,7 +15,7 @@ TEAM_ID = "MsOYrg4QoHcnSUht1hvbjhYM5BgzBcQT5HO3WVReiC338ykhP1"
 TEAM_ID_D = "hTGuBTgPhst20ZD8eZcFbCa53pWpgghVDSaKNBzn3DE2RDQEuz"
 # TEAM_ID_R = "QQ8vH8Upix6ai9hpg4nPdDnEyvDFSzVXJ87NWHk7gRQjEZnlym"
 # functions that you can call
-f = open('trace.json', 'a')
+f = open('trace1.json', 'a')
 
 
 def get_errors(id, vector):
@@ -208,7 +208,7 @@ def ga():
             f.write('\n\n')
 
             # crossover of parents to make child
-            f.write("CHILDREN : " + '\n\n')
+            f.write("CHILD : " + '\n\n')
             children = crossover(ind, population)
             # print("children created from crossover: " + str(children))
             er = fit(list(children))
